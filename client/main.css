@@ -1,4 +1,10 @@
 body {
-  padding: 10px;
-  font-family: sans-serif;
+  width: 100%;
+  height: 100%;
+}
+
+.header-logo {
+  width: 5rem;
+  height: auto;
+
 }

@@ -5,7 +5,8 @@ import crypto from 'crypto'
 
 
 Meteor.methods({
-    'users.register'(username, phone, email) {
+    'users.register'(user) {
+        const { username, phone, email } = user
         check(username, String);
         check(phone, String);
         check(email, String);
