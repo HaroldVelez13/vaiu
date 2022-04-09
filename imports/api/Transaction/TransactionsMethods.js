@@ -1,4 +1,4 @@
-import SimpleSchema from 'simpl-schema';
+import SimpleSchema from 'simple-schema';
 import { TransactionsCollection as Transactions } from '../../collections/TransactionsCollection';
 
 Transactions.schema = new SimpleSchema({
@@ -16,7 +16,7 @@ Transactions.schema = new SimpleSchema({
 
     },
     key: { type: String, optional: true },
-    userId: { type: String, regEx: SimpleSchema.RegEx.Id, optional: true },
+    userId: { type: String, optional: true },
     isActive: { type: Boolean, defaultValue: true },
 });
 
@@ -56,9 +56,9 @@ Meteor.methods({
 
         Transactions.schema.validate(transaction);
 
-        const transaction = Transactions.findOne({ _id: transactionId, userId: this.userId });
+        const _transaction = Transactions.findOne({ _id: transactionId, userId: this.userId });
 
-        if (!transaction) {
+        if (!_transaction) {
             throw new Meteor.Error('Access denied.');
         }
 
