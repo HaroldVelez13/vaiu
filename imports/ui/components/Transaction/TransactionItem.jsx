@@ -6,12 +6,14 @@ const TransactionItem = ({ transaction }) => (
         <Card className='shadow'>
             <CardBody className='px-3 py-1'>
                 <small>
-                    {transaction.amount}
+                    <b>Amount </b>{transaction.amount} {transaction.currency}(s)
+
                 </small>
 
             </CardBody>
             <CardFooter className='px-2 py-1'>
-                <small>footer</small>
+                {/*   <small><b>Start: </b>{transaction.start}</small>
+                <small><b>End: </b>{transaction.end}</small> */}
 
             </CardFooter>
         </Card>

@@ -1,13 +1,14 @@
+import { Meteor } from 'meteor/meteor';
 import React, { useState } from 'react'
 import { Form, FormGroup, Input, Label, Button, Modal, ModalHeader, ModalBody, Row, Col } from 'reactstrap';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { DateTime } from 'luxon'
 
 const TransactionForm = ({ modal, toggle }) => {
+
     const [transaction, setTransaction] = useState({});
     const [startDate, setStartDate] = useState(new Date());
-    const [finishDate, setFinishDate] = useState(new Date());
+    const [endDate, setEndDate] = useState(new Date());
 
     const onChangeHandler = (field, value) => {
         const newTransaction = transaction
@@ -15,11 +16,18 @@ const TransactionForm = ({ modal, toggle }) => {
         setTransaction(newTransaction)
     }
     const onClickHandler = () => {
-        transaction.validate = {
-            start: startDate,
-            finish: finishDate
-        }
-        console.log(transaction)
+        transaction.start = startDate
+        transaction.end = endDate
+
+        Meteor.call('transactions.insert', transaction, (error) => {
+            if (error) {
+                console.log(error)
+            }
+            else {
+                toggle()
+            }
+
+        });
     }
     return (
         <Modal isOpen={modal} toggle={toggle} >
@@ -50,8 +58,8 @@ const TransactionForm = ({ modal, toggle }) => {
                         </Col>
                         <Col sm="6">
                             <FormGroup>
-                                <Label >Finish Date</Label>
-                                <DatePicker selected={finishDate} onChange={(date) => setFinishDate(date)} />
+                                <Label >end Date</Label>
+                                <DatePicker selected={endDate} onChange={(date) => setEndDate(date)} />
                             </FormGroup>
                         </Col>
                     </Row>

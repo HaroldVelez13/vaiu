@@ -1,20 +1,20 @@
-import SimpleSchema from 'simple-schema';
+import SimpleSchema from 'simpl-schema';
 import { TransactionsCollection as Transactions } from '../../collections/TransactionsCollection';
+import crypto from 'crypto'
 
 Transactions.schema = new SimpleSchema({
     amount: { type: String },
     currency: { type: String },
-    validate: {
-        duration: { type: String },
-        start: { type: Date },
-        end: { type: Date },
-    },
-    location: {
-        lat: { type: Number, optional: true },
-        stlngart: { type: Number, optional: true },
-        rad: { type: Number, optional: true },
+    start: { type: Date },
+    end: { type: Date },
+    createAt: { type: Date },
 
-    },
+    /*  location: {
+         lat: { type: Number, optional: true },
+         stlngart: { type: Number, optional: true },
+         rad: { type: Number, optional: true },
+ 
+     }, */
     key: { type: String, optional: true },
     userId: { type: String, optional: true },
     isActive: { type: Boolean, defaultValue: true },
@@ -22,13 +22,19 @@ Transactions.schema = new SimpleSchema({
 
 Meteor.methods({
     'transactions.insert'(transaction) {
-        check(text, String);
-
         if (!this.userId) {
             throw new Meteor.Error('Not authorized.');
         }
+        //generate key and associate isActive and userId
+        transaction.key = crypto.randomBytes(3).toString('hex');
+        transaction.isActive = true;
+        transaction.userId = this.userId;
+        transaction.createAt = new Date();
+
+        //validate data
         Transactions.schema.validate(transaction);
-        Transactions.insert(transaction)
+        //save
+        Transactions.insert({ ...transaction })
     },
 
     'transactions.remove'(transactionId) {
