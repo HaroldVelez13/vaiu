@@ -26,7 +26,11 @@ const Transactions = () => {
     });
     return (
         <>
-            <Button color="warning" onClick={toggle}>Add</Button>
+            <div className="d-flex justify-content-center">
+                <Button color="warning" onClick={toggle} className="btn-round" title="Add">
+                    <i className="fa-solid fa-plus"></i>
+                </Button>
+            </div>
             <Row>
                 {transactions?.map(transaction =>
                     <TransactionItem key={transaction._id} transaction={transaction} />

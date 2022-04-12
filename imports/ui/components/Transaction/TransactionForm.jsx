@@ -1,24 +1,29 @@
 import { Meteor } from 'meteor/meteor';
 import React, { useState } from 'react'
-import { Form, FormGroup, Input, Label, Button, Modal, ModalHeader, ModalBody, Row, Col } from 'reactstrap';
+import { Form, FormGroup, Label, Button, Modal, ModalHeader, ModalBody, Row, Col } from 'reactstrap';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { useForm } from "react-hook-form";
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from "yup";
+
+const transactionSchema = yup.object({
+    currency: yup.string().required(),
+    amount: yup.number().positive().integer().required(),
+}).required();
 
 const TransactionForm = ({ modal, toggle }) => {
+    const toDay = new Date()
+    const tomorrow = new Date(Date.now() + (3600 * 1000 * 24))
+    const [startDate, setStartDate] = useState(toDay);
+    const [endDate, setEndDate] = useState(tomorrow);
 
-    const [transaction, setTransaction] = useState({});
-    const [startDate, setStartDate] = useState(new Date());
-    const [endDate, setEndDate] = useState(new Date());
-
-    const onChangeHandler = (field, value) => {
-        const newTransaction = transaction
-        newTransaction[field] = value;
-        setTransaction(newTransaction)
-    }
-    const onClickHandler = () => {
+    const { register, handleSubmit, formState: { errors } } = useForm({
+        resolver: yupResolver(transactionSchema)
+    });
+    const onSubmit = (transaction) => {
         transaction.start = startDate
         transaction.end = endDate
-
         Meteor.call('transactions.insert', transaction, (error) => {
             if (error) {
                 console.log(error)
@@ -26,28 +31,30 @@ const TransactionForm = ({ modal, toggle }) => {
             else {
                 toggle()
             }
-
         });
-    }
+    };
+
     return (
         <Modal isOpen={modal} toggle={toggle} >
             <ModalHeader toggle={toggle}>Transaction Form</ModalHeader>
             <ModalBody className='p-4 mt-3'>
-                <Form>
+                <Form onSubmit={handleSubmit(onSubmit)} noValidate>
                     <FormGroup>
                         <Label for="amount">Amount</Label>
-                        <Input onChange={(e) => onChangeHandler("amount", e.target.value)}
-                            type="number" name="username" id="amount" placeholder="0" required />
+                        <input  {...register("amount")} className="form-control"
+                            type="number" name="amount" id="amount" placeholder="0" min={0} />
+                        <small className='text-danger'>{errors?.amount ? "Enter a quantity of at least 1" : null}</small>
                     </FormGroup>
                     <FormGroup>
                         <Label for="currency">Currency</Label>
-                        <Input onChange={(e) => onChangeHandler("currency", e.target.value)}
-                            type="select" name="select" id="currency">
-                            <option >Select Currency</option>
+                        <select {...register("currency")} className="form-select"
+                            type="select" name="currency" id="currency">
+                            <option value={null}></option>
                             <option value="dollar">Dollar</option>
                             <option value="euro">Euro</option>
                             <option value="colombian pesos">Colombian pesos</option>
-                        </Input>
+                        </select>
+                        <small className='text-danger'>{errors?.currency ? "Select Currency" : null}</small>
                     </FormGroup>
                     <Row className='my-3'>
                         <Col sm="6">
@@ -59,13 +66,13 @@ const TransactionForm = ({ modal, toggle }) => {
                         <Col sm="6">
                             <FormGroup>
                                 <Label >end Date</Label>
-                                <DatePicker selected={endDate} onChange={(date) => setEndDate(date)} />
+                                <DatePicker selected={endDate} minDate={startDate} onChange={(date) => setEndDate(date)} />
                             </FormGroup>
                         </Col>
                     </Row>
 
                     <div className='text-center'>
-                        <Button onClick={onClickHandler} color="warning" size="lg" block>Create</Button>
+                        <Button color="warning" size="lg" block type='submit'>Create</Button>
                     </div>
                 </Form>
             </ModalBody>

@@ -8,3 +8,17 @@ body {
   height: auto;
 
 }
+
+.nav-user {
+  text-transform: capitalize;
+  cursor: pointer;
+}
+
+.hover-text-danger:hover {
+  color: #dc3545 !important;
+}
+
+.btn-round {
+  border-radius: 50px;
+  padding: auto;
+}

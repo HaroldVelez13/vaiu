@@ -1,4 +1,5 @@
 import SimpleSchema from 'simpl-schema';
+import { check } from 'meteor/check';
 import { TransactionsCollection as Transactions } from '../../collections/TransactionsCollection';
 import crypto from 'crypto'
 
@@ -8,7 +9,6 @@ Transactions.schema = new SimpleSchema({
     start: { type: Date },
     end: { type: Date },
     createAt: { type: Date },
-
     /*  location: {
          lat: { type: Number, optional: true },
          stlngart: { type: Number, optional: true },
@@ -53,23 +53,24 @@ Meteor.methods({
         Transactions.remove(transactionId);
     },
 
-    'transactions.update'(transactionId, transaction) {
+    'transactions.setIsActive'(transactionId, isActive) {
         check(transactionId, String);
+        check(isActive, Boolean);
 
         if (!this.userId) {
             throw new Meteor.Error('Not authorized.');
         }
 
-        Transactions.schema.validate(transaction);
+        const transaction = Transactions.findOne({ _id: transactionId, userId: this.userId });
 
-        const _transaction = Transactions.findOne({ _id: transactionId, userId: this.userId });
-
-        if (!_transaction) {
+        if (!transaction) {
             throw new Meteor.Error('Access denied.');
         }
 
         Transactions.update(transactionId, {
-            $set: transaction
+            $set: {
+                isActive,
+            },
         });
     },
 });

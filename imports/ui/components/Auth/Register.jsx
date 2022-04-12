@@ -1,48 +1,66 @@
 import { Meteor } from 'meteor/meteor';
 import React, { useState } from 'react'
-import { Form, FormGroup, Input, Label, Button } from 'reactstrap';
+import { Form, FormGroup, Alert, Label, Button } from 'reactstrap';
+import { useForm } from "react-hook-form";
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from "yup";
 
-const UserInit = {
-    username: "",
-    email: "",
-    phone: "",
-
-}
+const userSchema = yup.object({
+    username: yup.string().required(),
+    email: yup.string().email().required(),
+    phone: yup.string().required().min(8),
+}).required();
 
 const Register = () => {
-    const [user, setUser] = useState(UserInit);
+    const [visible, setVisible] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
+    const onDismiss = () => setVisible(false);
 
-    const onChangeHandler = (field, value) => {
-        const newUser = user
-        newUser[field] = value;
-        setUser(newUser)
-    }
-    const onClickHandler = () => {
-        console.log(user)
-        Meteor.call('users.register', user);
-    }
+    const { register, handleSubmit, formState: { errors } } = useForm({
+        resolver: yupResolver(userSchema)
+    });
+    const onSubmit = (user) => {
+        Meteor.call('users.register', user, (error) => {
+            if (error) {
+                console.log(error)
+                setVisible(true);
+                setErrorMessage(error?.reason);
+            }
+            else {
+                setVisible(false);
+                setErrorMessage('');
+            }
+        })
+    };
     return (
-        <Form>
-            <FormGroup>
-                <Label for="vaiuUsername">User Name</Label>
-                <Input onChange={(e) => onChangeHandler("username", e.target.value)}
-                    type="text" name="username" id="vaiuUsername" placeholder="user vaiu" />
-            </FormGroup>
-            <FormGroup>
-                <Label for="vaiuEmail">Email</Label>
-                <Input onChange={(e) => onChangeHandler("email", e.target.value)}
-                    type="email" name="email" id="vaiuEmail" placeholder="email@vaiu.com" />
-            </FormGroup>
-            <FormGroup>
-                <Label for="vaiuPhone">Phone</Label>
-                <Input onChange={(e) => onChangeHandler("phone", e.target.value)}
-                    type="text" name="phone" id="vaiuPhone" placeholder="3159872356" />
-            </FormGroup>
-            <div className='text-center'>
-                <Button onClick={onClickHandler}
-                    color="warning" size="lg" block >Register</Button>
-            </div>
-        </Form>
+        <>
+            <Alert color="dark" isOpen={visible} toggle={onDismiss} className="text-center text-warning">
+                {errorMessage}
+            </Alert>
+            <Form onSubmit={handleSubmit(onSubmit)} noValidate>
+                <FormGroup>
+                    <Label for="username">Username</Label>
+                    <input  {...register("username")} className="form-control"
+                        type="text" name="username" id="username" placeholder="user vaiu" />
+                    <small className='text-danger'>{errors?.username ? "Enter the username" : null}</small>
+                </FormGroup>
+                <FormGroup>
+                    <Label for="vaiuEmail">Email</Label>
+                    <input  {...register("email")} className="form-control"
+                        type="email" name="email" id="email" placeholder="email@vaiu.com" />
+                    <small className='text-danger'>{errors?.email ? "Enter a validate email" : null}</small>
+                </FormGroup>
+                <FormGroup>
+                    <Label for="phone">Phone</Label>
+                    <input  {...register("phone")} className="form-control"
+                        type="text" name="phone" id="phone" placeholder="3159872356" />
+                    <small className='text-danger'>{errors?.phone ? "Enter the phone, minimum 8 characters" : null}</small>
+                </FormGroup>
+                <div className='text-center'>
+                    <Button type='submit' color="warning" size="lg" block >Register</Button>
+                </div>
+            </Form>
+        </>
     )
 }
 
