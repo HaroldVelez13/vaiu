@@ -4,7 +4,7 @@ import { TransactionsCollection as Transactions } from '../../collections/Transa
 import crypto from 'crypto'
 
 Transactions.schema = new SimpleSchema({
-    amount: { type: String },
+    amount: { type: Number },
     currency: { type: String },
     start: { type: Date },
     end: { type: Date },

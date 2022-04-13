@@ -23,7 +23,7 @@ const TransactionItem = ({ transaction }) => {
         Meteor.call('transactions.setIsActive', id, isActive);
     }
     return (
-        <Col sm="12" md="4" lg="3" className='m-3'>
+        <Col xs="12" sm="6" md="4" lg="3" className='my-3'>
             <Card className='shadow'>
                 <CardHeader>
                     <a onClick={handledDelete} href="#" className='text-muted hover-text-danger' title="Delete">

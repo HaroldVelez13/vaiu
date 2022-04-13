@@ -18,9 +18,15 @@ const TransactionForm = ({ modal, toggle }) => {
     const [startDate, setStartDate] = useState(toDay);
     const [endDate, setEndDate] = useState(tomorrow);
 
-    const { register, handleSubmit, formState: { errors } } = useForm({
+    const { register, reset, handleSubmit, formState: { errors } } = useForm({
         resolver: yupResolver(transactionSchema)
     });
+    const submitSuccess = () => {
+        toggle()
+        reset()
+        setStartDate(toDay)
+        setEndDate(tomorrow)
+    }
     const onSubmit = (transaction) => {
         transaction.start = startDate
         transaction.end = endDate
@@ -29,7 +35,7 @@ const TransactionForm = ({ modal, toggle }) => {
                 console.log(error)
             }
             else {
-                toggle()
+                submitSuccess()
             }
         });
     };
