@@ -11,24 +11,26 @@ const userSchema = yup.object({
     phone: yup.string().required().min(8),
 }).required();
 
-const Register = () => {
+const Register = ({ onRegister }) => {
     const [visible, setVisible] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const onDismiss = () => setVisible(false);
 
-    const { register, handleSubmit, formState: { errors } } = useForm({
+    const { register, reset, handleSubmit, formState: { errors } } = useForm({
         resolver: yupResolver(userSchema)
     });
     const onSubmit = (user) => {
+        console.log("**user**", user)
         Meteor.call('users.register', user, (error) => {
             if (error) {
-                console.log(error)
                 setVisible(true);
                 setErrorMessage(error?.reason);
             }
             else {
                 setVisible(false);
                 setErrorMessage('');
+                onRegister(user.username)
+                reset()
             }
         })
     };
@@ -53,7 +55,7 @@ const Register = () => {
                 <FormGroup>
                     <Label for="phone">Phone</Label>
                     <input  {...register("phone")} className="form-control"
-                        type="text" name="phone" id="phone" placeholder="3159872356" />
+                        type="text" name="phone" id="phone" placeholder="+1 864 400 1821" />
                     <small className='text-danger'>{errors?.phone ? "Enter the phone, minimum 8 characters" : null}</small>
                 </FormGroup>
                 <div className='text-center'>

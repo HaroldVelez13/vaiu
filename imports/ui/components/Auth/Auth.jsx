@@ -5,9 +5,14 @@ import Register from './Register';
 
 const Auth = () => {
     const [isLogin, setIsLogin] = useState(true)
+    const [defaultUsername, setDefaultUsername] = useState("")
 
     const onClickHandler = () => {
         setIsLogin(!isLogin)
+    }
+    const onRegister = (username) => {
+        setDefaultUsername(username);
+        setIsLogin(true)
     }
     return (
         <Row>
@@ -15,9 +20,9 @@ const Auth = () => {
                 <Card className='p-3'>
                     <CardBody>
                         {isLogin
-                            ? <Login />
-                            : <Register />}
-
+                            ? <Login defaultUsername={defaultUsername} />
+                            : <Register onRegister={onRegister} />
+                        }
                     </CardBody>
                     <CardBody>
                         <a className='float-end' href='#' onClick={onClickHandler}>
