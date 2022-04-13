@@ -3,11 +3,6 @@ import '/imports/api/Transaction/TransactionsMethods'
 import '/imports/api/Transaction/TransactionsPublications'
 import { user_email, user_password } from '../imports/api/Utils/Globals';
 
-//Reset TransactionsCollection
-/* import { TransactionsCollection } from '../imports/collections/TransactionsCollection';
-TransactionsCollection.remove({});
-Meteor.users.remove({}); */
-
 
 Meteor.startup(function () {
     if (Meteor.isServer) {
