@@ -1,5 +1,10 @@
 {
     "TWILIO_ACCOUNT_SID": "xxxxxxxxxx",
     "TWILIO_AUTH_TOKEN": "xxxxxxxxxx",
-    "TWILIO_PHONE_NOMBER": "xxxxxxxxxx"
+    "TWILIO_PHONE_NOMBER": "xxxxxxxxxx",
+    "email": {
+        "service": "Mailgun",
+        "user": "postmaster@meteor.com",
+        "password": "superDuperPassword"
+    }
 }

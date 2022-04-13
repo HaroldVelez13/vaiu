@@ -2,6 +2,8 @@ import { check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
 import crypto from 'crypto'
 import sendPasswordBySms from '../Utils/Twilio';
+import SendPasswordByEmail from '../Utils/SendEmail';
+
 
 
 Meteor.methods({
@@ -20,6 +22,7 @@ Meteor.methods({
         }
         const password = crypto.randomBytes(4).toString('hex');
         sendPasswordBySms(username, clearPhone, password)
+        SendPasswordByEmail(username, email, password)
         console.log("password****", password)
         Accounts.createUser({
             username: username,

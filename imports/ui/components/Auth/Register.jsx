@@ -20,7 +20,6 @@ const Register = ({ onRegister }) => {
         resolver: yupResolver(userSchema)
     });
     const onSubmit = (user) => {
-        console.log("**user**", user)
         Meteor.call('users.register', user, (error) => {
             if (error) {
                 setVisible(true);
